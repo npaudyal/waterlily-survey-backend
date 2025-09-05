@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import routes from './routes';
+import { errorHandler } from '@/middleware/errorHandler';
 
 dotenv.config();
 

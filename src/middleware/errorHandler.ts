@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/errors';
+import { AppError } from '@/utils/errors';
 
 export const errorHandler = (
     err: Error,
@@ -14,10 +14,8 @@ export const errorHandler = (
         });
     }
 
-    // Log unexpected errors
     console.error('Unexpected error:', err);
 
-    // Don't leak error details in production
     const message = process.env.NODE_ENV === 'development'
         ? err.message
         : 'Something went wrong';
