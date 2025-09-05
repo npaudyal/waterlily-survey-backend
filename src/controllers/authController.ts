@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 export default async function authController(req: any, res: Response) {
 
     try {
-
+        console.log("Here")
         const userId = req.auth.userId;
         let user = await prisma.user.findUnique({
             where: { id: userId }

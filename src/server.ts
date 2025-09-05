@@ -25,7 +25,7 @@ app.get('/health', (req, res) => {
     res.json({ status: 'OK', message: 'Our server is healthy' })
 })
 
-app.get('/api', routes);
+app.use('/api', routes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`)
