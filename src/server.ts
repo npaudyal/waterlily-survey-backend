@@ -1,33 +1,33 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
-import { clerkMiddleware } from '@clerk/express';
-import routes from '@/routes/index';
+import routes from './routes';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors(
-    {
-        origin: process.env.NEXT_PUBLIC_URL,
-        credentials: true
-    }
-));
 app.use(helmet());
+app.use(cors({
+    origin: process.env.NEXT_PUBLIC_URL,
+    credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
-app.use(clerkMiddleware());
-
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', message: 'Our server is healthy' })
 })
 
+//All our API routes
 app.use('/api', routes);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on ${PORT}`)
-})
+app.use(errorHandler);
 
+const server = app.listen(PORT, () => {
+    console.log(`Server is running on port: ${PORT}`);
+});
