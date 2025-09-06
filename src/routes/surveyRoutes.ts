@@ -1,11 +1,11 @@
-import { requireAuth } from "@clerk/express";
 import { Router } from "express";
-import { getActiveSurvey, submitSurvey, getUserSubmission } from "@/controllers/surveyController";
+import { surveyController } from "@/controllers/surveyController"
+import { authenticateToken } from "@/middleware/auth";
 
 const router = Router();
 
-router.get('/active', getActiveSurvey);
-router.post('/submit', requireAuth(), submitSurvey);
-router.get('/submission', requireAuth(), getUserSubmission);
+router.get('/active', surveyController.getSurvey);
+router.post('/submit', authenticateToken, surveyController.submitSurvey);
+router.get('/submission', authenticateToken, surveyController.getUserSubmissions);
 
 export default router;

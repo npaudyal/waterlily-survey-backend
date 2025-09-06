@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router } from 'express';
 import authRoutes from '@/routes/authRoutes';
 import surveyRoutes from '@/routes/surveyRoutes';
 
