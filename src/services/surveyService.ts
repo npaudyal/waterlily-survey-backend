@@ -131,7 +131,11 @@ export class SurveyService {
                 survey: true,
                 answers: {
                     include: {
-                        question: true
+                        question: {
+                            include: {
+                                section: true
+                            }
+                        }
                     }
                 }
             },

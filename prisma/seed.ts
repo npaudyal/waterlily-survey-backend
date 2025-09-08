@@ -512,6 +512,7 @@ async function main() {
   const testUser = await prisma.user.create({
     data: {
       email: 'test@example.com',
+      name: 'John Doe',
       passwordHash: 'hashed_password_here', // In real implementation, use proper hashing
     },
   });

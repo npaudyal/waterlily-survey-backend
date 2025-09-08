@@ -6,7 +6,7 @@ import { ConflictError, UnauthorizedError } from '@/utils/errors';
 
 export class AuthService {
     async register(userData: CreateUserDTO) {
-        const { email, password } = userData;
+        const { email, password, name } = userData;
 
         const existingUser = await prisma.user.findUnique({
             where: { email }
@@ -20,11 +20,13 @@ export class AuthService {
         const user = await prisma.user.create({
             data: {
                 email,
+                name,
                 passwordHash
             },
             select: {
                 id: true,
                 email: true,
+                name: true,
                 createdAt: true
             }
         });
@@ -76,6 +78,7 @@ export class AuthService {
             user: {
                 id: user.id,
                 email: user.email,
+                name: user.name,
                 createdAt: user.createdAt
             },
             accessToken,
@@ -89,6 +92,7 @@ export class AuthService {
             select: {
                 id: true,
                 email: true,
+                name: true,
                 createdAt: true,
                 _count: {
                     select: {
