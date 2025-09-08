@@ -12,9 +12,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
+
+const corsOrigin = process.env.NEXT_PUBLIC_URL
+    ? process.env.NEXT_PUBLIC_URL.replace(/\/$/, '')
+    : 'http://localhost:3001';
+
+console.log('CORS configured for origin:', corsOrigin);
+
 app.use(cors({
-    origin: process.env.NEXT_PUBLIC_URL,
-    credentials: true
+    origin: corsOrigin,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    exposedHeaders: ['Set-Cookie']
 }));
 app.use(cookieParser());
 app.use(express.json());
