@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '@/middleware/errorHandler';
 import { authService } from '@/services/authService';
+import { getCookieConfig, ACCESS_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from '@/utils/cookie-config';
 
 interface AuthRequest extends Request {
     userId?: string;
@@ -11,20 +12,8 @@ export class AuthController {
     register = asyncHandler(async (req: Request, res: Response) => {
         const result = await authService.register(req.body);
 
-        // Set cookies
-        res.cookie('accessToken', result.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 15 * 60 * 1000 // 15 minutes
-        });
-
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
+        res.cookie('accessToken', result.accessToken, getCookieConfig(ACCESS_TOKEN_MAX_AGE));
+        res.cookie('refreshToken', result.refreshToken, getCookieConfig(REFRESH_TOKEN_MAX_AGE));
 
         res.status(201).json({
             message: 'User registered successfully',
@@ -37,20 +26,8 @@ export class AuthController {
     login = asyncHandler(async (req: Request, res: Response) => {
         const result = await authService.login(req.body);
 
-        // Set cookies
-        res.cookie('accessToken', result.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 15 * 60 * 1000 // 15 minutes
-        });
-
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
+        res.cookie('accessToken', result.accessToken, getCookieConfig(ACCESS_TOKEN_MAX_AGE));
+        res.cookie('refreshToken', result.refreshToken, getCookieConfig(REFRESH_TOKEN_MAX_AGE));
 
         res.status(200).json({
             message: 'Login successful',
@@ -61,8 +38,9 @@ export class AuthController {
     });
 
     logout = asyncHandler(async (req: Request, res: Response) => {
-        res.clearCookie('accessToken');
-        res.clearCookie('refreshToken');
+        const cookieOptions = getCookieConfig(0);
+        res.clearCookie('accessToken', { ...cookieOptions, maxAge: 0 });
+        res.clearCookie('refreshToken', { ...cookieOptions, maxAge: 0 });
 
         res.status(200).json({
             message: 'Logged out successfully'
@@ -80,20 +58,8 @@ export class AuthController {
 
         const result = await authService.refreshTokens(refreshToken);
 
-        // Set new cookies
-        res.cookie('accessToken', result.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 15 * 60 * 1000 // 15 minutes
-        });
-
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-        });
+        res.cookie('accessToken', result.accessToken, getCookieConfig(ACCESS_TOKEN_MAX_AGE));
+        res.cookie('refreshToken', result.refreshToken, getCookieConfig(REFRESH_TOKEN_MAX_AGE));
 
         res.status(200).json({
             message: 'Tokens refreshed successfully'
@@ -110,10 +76,13 @@ export class AuthController {
     });
 
     validateToken = asyncHandler(async (req: AuthRequest, res: Response) => {
+        const user = await authService.getProfile(req.userId!);
+
         res.status(200).json({
             valid: true,
             userId: req.userId,
-            email: req.userEmail
+            email: req.userEmail,
+            name: user.name
         });
     });
 }
