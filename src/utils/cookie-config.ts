@@ -14,6 +14,7 @@ export const getCookieConfig = (maxAge: number): CookieOptions => {
         return {
             ...baseConfig,
             sameSite: 'none', // Required for cross-domain cookies
+            domain: undefined, // Let browser determine the domain
         };
     }
 
